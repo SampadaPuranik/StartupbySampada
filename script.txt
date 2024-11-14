@@ -1,0 +1,23 @@
+<script>
+jQuery(document).ready(function($) {
+    $('#whatsapp-share-cart').on('click', function(e) {
+        e.preventDefault();
+        
+        var whatsappMessage = "Hello, I am interested in these products:\n";
+        var cartItems = $('.woocommerce-cart-form .cart_item');
+        
+        cartItems.each(function(index) {
+            var product = $(this).find('.product-name a').text().trim();
+            var quantity = $(this).find('.quantity .qty').val().trim();
+            var price = $(this).find('.product-subtotal').text().trim();
+            
+            whatsappMessage += (index + 1) + ". " + product + " - Qty: " + quantity + " - Price: " + price + "\n";
+        });
+        
+        whatsappMessage += "\nPlease confirm my order on WhatsApp.";
+        
+        var whatsappUrl = "https://wa.me/+917888828897?text=" + encodeURIComponent(whatsappMessage);
+        window.open(whatsappUrl, '_blank');
+    });
+});
+</script>

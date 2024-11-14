@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Startup Simulation Challenge</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Startup Simulation Challenge</h1>
+
+    <!-- Section for selecting a team -->
+    <div id="team-selection">
+        <h2>Select a Team</h2>
+        <select id="team-select">
+            <!-- Teams will be populated here via JavaScript -->
+        </select>
+        <button onclick="selectTeam()">Select Team</button>
+    </div>
+
+    <!-- Section for game actions -->
+    <div id="game">
+        <h2>Actions</h2>
+        <div id="team-info">
+            <p>Current Team: <span id="current-team-name">-</span></p>
+            <p>Points: <span id="points">-</span></p>
+            <p>Resources: <span id="resources">-</span></p>
+        </div>
+        <button onclick="drawChallengeCard()">Draw Challenge Card</button>
+        <button onclick="drawRiskCard()">Draw Risk Card</button>
+        <button onclick="drawEventCard()">Draw Event Card</button>
+        <div id="card-display"></div>
+    </div>
+
+    <!-- Scoreboard for all teams -->
+    <div id="scoreboard">
+        <h2>Scoreboard</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Team Name</th>
+                    <th>Points</th>
+                    <th>Resources</th>
+                    <th>History</th>
+                </tr>
+            </thead>
+            <tbody id="scoreboard-body">
+                <!-- Team data will be added here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
