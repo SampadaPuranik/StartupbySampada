@@ -45,3 +45,24 @@ th, td {
 th {
     background-color: #f2f2f2;
 }
+#card-suspense {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+}
+
+#suspense-timer {
+    font-size: 3em;
+    color: #ff6347;
+}
