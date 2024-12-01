@@ -140,18 +140,19 @@
         let drawnCards = {}; // Tracks cards drawn by teams in each stage
 
         // Sample cards
-        const challengeCards = [
-            { text: "Product Development - Spend 200 points for a feature.", points: -200, reward: Math.floor(Math.random() * 101) },
-            { text: "Market Expansion - Spend 300 points, high success gains 100.", points: -300, reward: Math.floor(Math.random() * 101) }
-        ];
-        const riskCards = [
-            { text: "Social Media Blitz - Spend 200, high gains possible.", points: -200, reward: Math.floor(Math.random() * 101) },
-            { text: "Influencer Marketing - Spend 300, high success gains 100.", points: -300, reward: Math.floor(Math.random() * 101) }
-        ];
-        const eventCards = [
-            { text: "Economic Boom - Gain points.", reward: Math.floor(Math.random() * (80 - 60 + 1)) + 60 },
-            { text: "Market Crash - Lose points.", penalty: -Math.floor(Math.random() * (40 - 20 + 1)) - 20 }
-        ];
+const challengeCards = [
+    { text: "Product Development - Spend 200 points for a feature.", points: -200 },
+    { text: "Market Expansion - Spend 300 points.", points: -300 }
+];
+const riskCards = [
+    { text: "Social Media Blitz - Spend 200 points.", points: -200 },
+    { text: "Influencer Marketing - Spend 300 points.", points: -300 }
+];
+const eventCards = [
+    { text: "Economic Boom - Gain 80 points.", points: 80 },
+    { text: "Market Crash - Lose 40 points.", points: -40 }
+];
+
 
         // Register a new team
         function registerTeam() {

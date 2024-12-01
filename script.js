@@ -1,5 +1,3 @@
-// script.js
-
 // Data structure for teams
 let teams = [
     { name: "Team A", points: 1000, resources: 5, history: [] },
@@ -10,17 +8,25 @@ let currentTeam = null; // Selected team for gameplay
 
 // Sample cards
 const challengeCards = [
-    { text: "Product Development - Spend 200 points for a feature.", points: -200, reward: 50 },
-    { text: "Market Expansion - Spend 300 points, high success gains 100.", points: -300, reward: 100 }
+    { text: "Product Development - Spend 200 points for a feature.", points: -200 },
+    { text: "Market Expansion - Spend 300 points.", points: -300 }
 ];
 const riskCards = [
-    { text: "Venture Capital - Gain 500 points but lose future 10%.", reward: 500 },
-    { text: "Ad Gamble - Spend 200, double or lose 150.", points: -200, reward: 400 }
+    { text: "Venture Capital - Gain 500 points but lose future 10%.", points: 500 },
+    { text: "Ad Gamble - Spend 200 points.", points: -200 }
 ];
 const eventCards = [
-    { text: "Economic Boom - Gain 100 points.", reward: 100 },
-    { text: "Market Crash - Lose 50 points.", penalty: -50 }
+    { text: "Economic Boom - Gain 100 points.", points: 100 },
+    { text: "Market Crash - Lose 50 points.", points: -50 }
 ];
+
+
+// Track current stage and card drawing status
+let currentStage = 1; // Stages: 1, 2, or 3
+let drawnCards = {};
+let challengeCardIndex = 0;
+let riskCardIndex = 0;
+let eventCardIndex = 0;
 
 // Populate team dropdown on load
 window.onload = () => {
@@ -43,41 +49,57 @@ function selectTeam() {
     document.getElementById('resources').textContent = currentTeam.resources;
 }
 
-// Draw Challenge Card
+// Sequential card drawing
+function drawCardSequential(cardType) {
+    if (!currentTeam) return alert("Please select a team first.");
+    let card;
+
+    switch (cardType) {
+        case "challenge":
+            card = challengeCards[challengeCardIndex];
+            challengeCardIndex = (challengeCardIndex + 1) % challengeCards.length;
+            break;
+        case "risk":
+            card = riskCards[riskCardIndex];
+            riskCardIndex = (riskCardIndex + 1) % riskCards.length;
+            break;
+        case "event":
+            card = eventCards[eventCardIndex];
+            eventCardIndex = (eventCardIndex + 1) % eventCards.length;
+            break;
+    }
+
+    applyCardEffect(card, `${cardType.charAt(0).toUpperCase() + cardType.slice(1)} Card: ${card.text}`);
+}
+
+// Draw specific card types
 function drawChallengeCard() {
-    let card = challengeCards[Math.floor(Math.random() * challengeCards.length)];
-    updateTeamStats(card, "Challenge Card: " + card.text);
+    if (currentStage !== 1) return alert("You can only draw Challenge Cards in Stage 1.");
+    drawCardSequential("challenge");
 }
 
-// Draw Risk Card
 function drawRiskCard() {
-    let card = riskCards[Math.floor(Math.random() * riskCards.length)];
-    updateTeamStats(card, "Risk Card: " + card.text);
+    if (currentStage !== 2) return alert("You can only draw Risk Cards in Stage 2.");
+    drawCardSequential("risk");
 }
 
-// Draw Event Card
 function drawEventCard() {
-    let card = eventCards[Math.floor(Math.random() * eventCards.length)];
-    updateTeamStats(card, "Event Card: " + card.text);
+    if (currentStage !== 3) return alert("You can only draw Event Cards in Stage 3.");
+    drawCardSequential("event");
 }
 
-// Roll Dice for a random event outcome
-function rollDice() {
-    let diceResult = Math.floor(Math.random() * 6) + 1;
-    document.getElementById('dice-result').textContent = diceResult;
-    let outcome = (diceResult > 3) ? { points: 100 } : { points: -50 };
-    updateTeamStats(outcome, "Dice Roll: " + (outcome.points > 0 ? "Win 100" : "Lose 50"));
-}
-
-// Update points, resources, and history for the current team
-function updateTeamStats(action, description) {
+// Apply card effects
+function applyCardEffect(card, description) {
     if (!currentTeam) return alert("Please select a team first.");
     
-    currentTeam.points += (action.points || 0) + (action.reward || 0);
-    currentTeam.resources += action.points < 0 ? -1 : 0;
+    // Apply effects
+    currentTeam.points += card.points || 0;
+    currentTeam.points += card.reward || 0;
+    currentTeam.points += card.penalty || 0;
+    currentTeam.resources += card.points < 0 ? -1 : 0;
     currentTeam.history.push(description);
     
-    // Update display
+    // Update UI
     document.getElementById('points').textContent = currentTeam.points;
     document.getElementById('resources').textContent = currentTeam.resources;
     document.getElementById('card-display').textContent = description;
@@ -85,7 +107,7 @@ function updateTeamStats(action, description) {
     updateScoreboard();
 }
 
-// Display all teams' data in the scoreboard
+// Update scoreboard
 function updateScoreboard() {
     const scoreboardBody = document.getElementById('scoreboard-body');
     scoreboardBody.innerHTML = '';
@@ -101,10 +123,6 @@ function updateScoreboard() {
     });
 }
 
-// Track current stage and card-drawing status
-let currentStage = 1; // Stage 1, 2, or 3
-let drawnCards = {}; // Tracks cards drawn by team in the current stage
-
 // Team Registration
 function registerTeam() {
     const teamNameInput = document.getElementById("new-team-name");
@@ -115,7 +133,6 @@ function registerTeam() {
 
     const newTeam = { name: teamName, points: 1000, resources: 5, history: [] };
     teams.push(newTeam);
-    drawnCards[teamName] = { stage1: false, stage2: false, stage3: false }; // Initialize drawn status
     teamNameInput.value = "";
 
     const teamSelect = document.getElementById("team-select");
@@ -127,61 +144,11 @@ function registerTeam() {
     updateScoreboard();
 }
 
-// Card Drawing Logic with Suspense
-function drawCard(type) {
-    if (!currentTeam) return alert("Please select a team first.");
-    if (drawnCards[currentTeam.name][`stage${currentStage}`]) {
-        return alert(`You have already drawn a card for Stage ${currentStage}.`);
-    }
-
-    // Mark card as drawn for this stage
-    drawnCards[currentTeam.name][`stage${currentStage}`] = true;
-
-    // Show suspense
-    const suspenseDiv = document.getElementById("card-suspense");
-    const suspenseTimer = document.getElementById("suspense-timer");
-    suspenseDiv.style.display = "block";
-    let timeLeft = 3;
-
-    const interval = setInterval(() => {
-        suspenseTimer.textContent = timeLeft;
-        timeLeft--;
-        if (timeLeft < 0) {
-            clearInterval(interval);
-            suspenseDiv.style.display = "none";
-
-            // Draw card based on type
-            let card;
-            if (type === "challenge") card = challengeCards[Math.floor(Math.random() * challengeCards.length)];
-            if (type === "risk") card = riskCards[Math.floor(Math.random() * riskCards.length)];
-            if (type === "event") card = eventCards[Math.floor(Math.random() * eventCards.length)];
-
-            // Apply card effects
-            updateTeamStats(card, `${type.charAt(0).toUpperCase() + type.slice(1)} Card: ${card.text}`);
-        }
-    }, 1000);
-}
-
-// Button Handlers for Drawing Cards
-function drawChallengeCard() {
-    if (currentStage !== 1) return alert("You can only draw Challenge Cards in Stage 1.");
-    drawCard("challenge");
-}
-
-function drawRiskCard() {
-    if (currentStage !== 2) return alert("You can only draw Risk Cards in Stage 2.");
-    drawCard("risk");
-}
-
-function drawEventCard() {
-    if (currentStage !== 3) return alert("You can only draw Event Cards in Stage 3.");
-    drawCard("event");
-}
-
-// Advance to Next Stage
+// Advance to next stage
 function nextStage() {
     if (currentStage >= 3) {
-        return alert("The game has ended. Thank you for playing!");
+        alert("The game has ended. Thank you for playing!");
+        return;
     }
     currentStage++;
     alert(`Stage ${currentStage} has begun!`);
