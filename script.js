@@ -141,7 +141,7 @@ function drawCard(type) {
     const suspenseDiv = document.getElementById("card-suspense");
     const suspenseTimer = document.getElementById("suspense-timer");
     suspenseDiv.style.display = "block";
-    let timeLeft = 7;
+    let timeLeft = 3;
 
     const interval = setInterval(() => {
         suspenseTimer.textContent = timeLeft;
